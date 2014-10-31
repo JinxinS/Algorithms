@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
-int noc = 0;
+//#define RIGHT_MOST
+//#define LEFT_MOST
+long noc = 0;
 void  quicksort(int* arr, int i,int k);
-
+void  check_order(int* arr,int len);
 int main(){
 	FILE* fp;
 	fp = fopen("./QuickSort.txt","r");
@@ -21,14 +23,14 @@ int main(){
 	int *array = (int*)malloc(sizeof(int)*num_of_lines);
 	int i = 0;	
 	while((read = getline(&line,&len,fp)) != -1){
-		i++;
 		array[i] = atoi(line);
+//		printf("[%d] %d \n",i,array[i]);
+		i++;
 	}
 	
-
-	 quicksort(array,0,num_of_lines-1);
-
-//	for(int i = 0; i< num_of_lines; ++i) printf("%d \n",array[i]);
+printf("arry length %d -> %d\n",0,num_of_lines-1);
+	quicksort(array,0,num_of_lines-1);
+	check_order(array,num_of_lines);
 	printf("number of comparation is %d \n",noc);
 	free(array);
 	fclose(fp);
@@ -37,8 +39,8 @@ int main(){
 
 #include <algorithm>
 
-//#define LEFT_MOST
-//#define RIGHT_MOST
+
+
 int choose_pivot(int *a,int i, int k){
 #if defined(LEFT_MOST)
 	return i;
@@ -64,12 +66,12 @@ int choose_pivot(int *a,int i, int k){
 }
 
 
-int partition(int * arr, int i, int k){
-	noc += k-i;
-	int pivotIndex = choose_pivot(arr,i,k);
+int partition(int * arr, int l, int r){
+	noc +=( r-l);
+	int pivotIndex = choose_pivot(arr,l,r);
 	int pivotValue = arr[pivotIndex];
-	int storeIndex = i;
-	for(int idx = i; idx <= k; ++idx ){
+	int storeIndex = l+1;
+	for(int idx = l+1; idx <= r; ++idx ){
 		if (arr[idx] < pivotValue){
 		   int tmp = arr[idx];
 		   arr[idx] = arr[storeIndex];
@@ -77,8 +79,10 @@ int partition(int * arr, int i, int k){
 		   ++storeIndex;		
 		}
 	}
-	arr[storeIndex] = pivotValue;
-	return storeIndex;
+	int temp = arr[storeIndex-1];
+	arr[storeIndex-1] = pivotValue;
+	arr[l] = temp;
+	return storeIndex-1;
 
 }
 
@@ -90,4 +94,15 @@ void quicksort(int* arr, int i,int k){
 	quicksort(arr,p+1,k);	
       }
 	
+}
+
+void check_order(int* a,int n){
+	for (int i = 0 ; i< n -1; ++i)
+	  if(a[i]> a [i+1]){
+		printf("out of order ! a [%d]( %d) > a[%d] (%d) \n",i,a[i],i+1,a[i+1]);
+		exit(1);
+	  }	
+
+
+
 }
